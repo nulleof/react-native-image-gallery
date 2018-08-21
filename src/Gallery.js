@@ -22,6 +22,8 @@ export default class Gallery extends PureComponent {
         onSingleTapConfirmed: PropTypes.func,
         onGalleryStateChanged: PropTypes.func,
         onLongPress: PropTypes.func,
+        onSwipedVertical: PropTypes.func,
+        swipeSpeed: PropTypes.number,
         removeClippedSubviews: PropTypes.bool,
         imageComponent: PropTypes.func,
         errorComponent: PropTypes.func,
@@ -32,7 +34,8 @@ export default class Gallery extends PureComponent {
         removeClippedSubviews: true,
         imageComponent: undefined,
         scrollViewStyle: {},
-        flatListProps: DEFAULT_FLAT_LIST_PROPS
+        flatListProps: DEFAULT_FLAT_LIST_PROPS,
+        swipeSpeed: 4,
     };
 
     imageRefs = new Map();
@@ -64,6 +67,10 @@ export default class Gallery extends PureComponent {
                     this.activeResponder.onEnd(evt, gestureState, true);
                     this.getViewPagerInstance().flingToPage(this.currentPage, gestureState.vx);
                 } else {
+                    if (Math.abs(gestureState.vy) > this.props.swipeSpeed) {
+                        this.props.onSwipedVertical && this.props.onSwipedVertical(evt, gestureState)
+                    }
+
                     this.activeResponder.onEnd(evt, gestureState);
                 }
                 this.activeResponder = null;
